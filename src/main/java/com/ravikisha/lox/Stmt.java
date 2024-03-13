@@ -6,6 +6,7 @@ abstract class Stmt {
   interface Visitor<R> {
     R visitBlockStmt(Block stmt);
     R visitExpressionStmt(Expression stmt);
+    R visitClassStmt(Class stmt);
     R visitFunctionStmt(Function stmt);
     R visitPrintStmt(Print stmt);
     R visitReturnStmt(Return stmt);
@@ -34,6 +35,21 @@ abstract class Stmt {
     }
 
     final Expr expression;
+  }
+  static class Class extends Stmt {
+    Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods) {
+      this.name = name;
+      this.superclass = superclass;
+      this.methods = methods;
+    }
+
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitClassStmt(this);
+    }
+
+    final Token name;
+    final Expr.Variable superclass;
+    final List<Stmt.Function> methods;
   }
   static class Function extends Stmt {
     Function(Token name, List<Token> params, List<Stmt> body) {
