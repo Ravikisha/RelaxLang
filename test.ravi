@@ -1,0 +1,12 @@
+class Student {
+    init() {
+        print("Student class is called");
+    }
+}
+
+fun main() {
+    var student = Student();
+    print student;
+}
+
+main();
