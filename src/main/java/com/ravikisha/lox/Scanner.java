@@ -115,6 +115,7 @@ public class Scanner {
             case '"':
                 string();
                 break;
+                // Added support for 'or' operator start
             case 'o':
                 if (peek() == 'r') {
                     advance();
@@ -123,6 +124,7 @@ public class Scanner {
                     identifier();
                 }
                 break;
+                // Added support for 'or' operator end
             default:
                 if (isDigit(c)) {
                     number();
