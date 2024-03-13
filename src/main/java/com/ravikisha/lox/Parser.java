@@ -36,6 +36,8 @@ public class Parser {
                 return function("function");
             if (match(VAR))
                 return varDeclaration();
+            if (match(CLASS))
+                return classDeclaration();
             return statement();
         } catch (ParseError error) {
             synchronize();
@@ -57,6 +59,26 @@ public class Parser {
         if (match(RETURN))
             return returnStatement();
         return expressionStatement();
+    }
+
+    private Stmt classDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect class name.");
+
+        Expr.Variable superclass = null;
+        if (match(LESS)) {
+            consume(IDENTIFIER, "Expect superclass name.");
+            superclass = new Expr.Variable(previous());
+        }
+
+        consume(LEFT_BRACE, "Expect '{' before class body.");
+
+        List<Stmt.Function> methods = new ArrayList<>();
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
+            methods.add((Stmt.Function) function("method"));
+        }
+
+        consume(RIGHT_BRACE, "Expect '}' after class body.");
+        return new Stmt.Class(name, superclass, methods);
     }
 
     private Stmt forStatement() {
@@ -87,12 +109,12 @@ public class Parser {
 
         if (increment != null) {
             body = new Stmt.Block(Arrays.asList(
-                body,
-                new Stmt.Expression(increment)
-            ));
+                    body,
+                    new Stmt.Expression(increment)));
         }
 
-        if (condition == null) condition = new Expr.Literal(true);
+        if (condition == null)
+            condition = new Expr.Literal(true);
         body = new Stmt.While(condition, body);
 
         if (initializer != null) {
@@ -159,7 +181,7 @@ public class Parser {
         return new Stmt.Expression(expr);
     }
 
-    private Stmt function(String kind) {
+    private Stmt.Function function(String kind) {
         Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
         consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
         List<Token> parameters = new ArrayList<>();
@@ -198,6 +220,9 @@ public class Parser {
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
+            } else if (expr instanceof Expr.Get) {
+                Expr.Get get = (Expr.Get) expr;
+                return new Expr.Set(get.object, get.name, value);
             }
 
             error(equals, "Invalid assignment target.");
@@ -306,6 +331,10 @@ public class Parser {
                 case PRINT:
                 case RETURN:
                     return;
+                // Custom Code Start
+                default:
+                    break;
+                // Custom Code End
             }
 
             advance();
@@ -380,6 +409,9 @@ public class Parser {
         while (true) {
             if (match(LEFT_PAREN)) {
                 expr = finishCall(expr);
+            } else if (match(DOT)) {
+                Token name = consume(IDENTIFIER, "Expect property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
@@ -398,6 +430,17 @@ public class Parser {
 
         if (match(NUMBER, STRING)) {
             return new Expr.Literal(previous().literal);
+        }
+
+        if (match(SUPER)) {
+            Token keyword = previous();
+            consume(DOT, "Expect '.' after 'super'.");
+            Token method = consume(IDENTIFIER, "Expect superclass method name.");
+            return new Expr.Super(keyword, method);
+        }
+
+        if (match(THIS)) {
+            return new Expr.This(previous());
         }
 
         if (match(IDENTIFIER)) {
