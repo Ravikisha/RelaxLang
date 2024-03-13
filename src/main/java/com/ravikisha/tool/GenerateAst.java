@@ -5,18 +5,29 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class is used to generate the AST classes for the Lox language.
+ */
 public class GenerateAst {
     public static void main(String[] args) throws IOException {
         // if (args.length != 1) {
         //     System.err.println("Usage: generate_ast <output directory>");
         //     System.exit(64);
         // }
+
+        // String outputDir = args[0];
+
         String outputDir = "src/main/java/com/ravikisha/lox";
 
+        // Define the AST classes For Expressions and Statements.
         defineAst(outputDir, "Expr", Arrays.asList(
             "Assign   : Token name, Expr value",
             "Binary   : Expr left, Token operator, Expr right",
             "Call     : Expr callee, Token paren, List<Expr> arguments",
+            "Get      : Expr object, Token name",
+            "Set      : Expr object, Token name, Expr value",
+            "Super    : Token keyword, Token method",
+            "This     : Token keyword",
             "Grouping : Expr expression",
             "Literal  : Object value",
             "Logical  : Expr left, Token operator, Expr right",
@@ -27,6 +38,7 @@ public class GenerateAst {
         defineAst(outputDir, "Stmt", Arrays.asList(
             "Block      : List<Stmt> statements",
             "Expression : Expr expression",
+            "Class      : Token name, Expr.Variable superclass, List<Stmt.Function> methods",
             "Function   : Token name, List<Token> params, List<Stmt> body",
             "Print      : Expr expression",
             "Return     : Token keyword, Expr value",
