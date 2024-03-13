@@ -15,11 +15,20 @@ public class Environment {
         this.enclosing = enclosing;
     }
 
+    @Override
+    public String toString(){
+        String result = values.toString();
+        if (enclosing != null) {
+            result += " -> " + enclosing.toString();
+        }
+        return result;
+    }
+
     void define(String name, Object value) {
         values.put(name, value);
     }
 
-    private Environment ancestor(int distance) {
+    Environment ancestor(int distance) {
         Environment environment = this;
         for (int i = 0; i < distance; i++) {
             environment = environment.enclosing;
