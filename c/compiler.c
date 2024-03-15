@@ -1,37 +1,22 @@
-//> Scanning on Demand compiler-c
 #include <stdio.h>
-//> Compiling Expressions compiler-include-stdlib
 #include <stdlib.h>
-//< Compiling Expressions compiler-include-stdlib
-//> Local Variables compiler-include-string
 #include <string.h>
-//< Local Variables compiler-include-string
 
 #include "common.h"
 #include "compiler.h"
-//> Garbage Collection compiler-include-memory
 #include "memory.h"
-//< Garbage Collection compiler-include-memory
 #include "scanner.h"
-//> Compiling Expressions include-debug
 
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
 #endif
-//< Compiling Expressions include-debug
-//> Compiling Expressions parser
 
 typedef struct {
   Token current;
   Token previous;
-//> had-error-field
   bool hadError;
-//< had-error-field
-//> panic-mode-field
   bool panicMode;
-//< panic-mode-field
 } Parser;
-//> precedence
 
 typedef enum {
   PREC_NONE,
@@ -46,116 +31,59 @@ typedef enum {
   PREC_CALL,        // . ()
   PREC_PRIMARY
 } Precedence;
-//< precedence
-//> parse-fn-type
 
-//< parse-fn-type
-/* Compiling Expressions parse-fn-type < Global Variables parse-fn-type
-typedef void (*ParseFn)();
-*/
-//> Global Variables parse-fn-type
 typedef void (*ParseFn)(bool canAssign);
-//< Global Variables parse-fn-type
-//> parse-rule
 
 typedef struct {
   ParseFn prefix;
   ParseFn infix;
   Precedence precedence;
 } ParseRule;
-//< parse-rule
-//> Local Variables local-struct
 
 typedef struct {
   Token name;
   int depth;
-//> Closures is-captured-field
   bool isCaptured;
-//< Closures is-captured-field
 } Local;
-//< Local Variables local-struct
-//> Closures upvalue-struct
+
 typedef struct {
   uint8_t index;
   bool isLocal;
 } Upvalue;
-//< Closures upvalue-struct
-//> Calls and Functions function-type-enum
+
 typedef enum {
   TYPE_FUNCTION,
-//> Methods and Initializers initializer-type-enum
   TYPE_INITIALIZER,
-//< Methods and Initializers initializer-type-enum
-//> Methods and Initializers method-type-enum
   TYPE_METHOD,
-//< Methods and Initializers method-type-enum
   TYPE_SCRIPT
 } FunctionType;
-//< Calls and Functions function-type-enum
-//> Local Variables compiler-struct
 
-/* Local Variables compiler-struct < Calls and Functions enclosing-field
-typedef struct {
-*/
-//> Calls and Functions enclosing-field
 typedef struct Compiler {
   struct Compiler* enclosing;
-//< Calls and Functions enclosing-field
-//> Calls and Functions function-fields
   ObjFunction* function;
   FunctionType type;
-
-//< Calls and Functions function-fields
   Local locals[UINT8_COUNT];
   int localCount;
-//> Closures upvalues-array
   Upvalue upvalues[UINT8_COUNT];
-//< Closures upvalues-array
   int scopeDepth;
 } Compiler;
-//< Local Variables compiler-struct
-//> Methods and Initializers class-compiler-struct
 
 typedef struct ClassCompiler {
   struct ClassCompiler* enclosing;
-//> Superclasses has-superclass
   bool hasSuperclass;
-//< Superclasses has-superclass
 } ClassCompiler;
-//< Methods and Initializers class-compiler-struct
 
 Parser parser;
-//< Compiling Expressions parser
-//> Local Variables current-compiler
 Compiler* current = NULL;
-//< Local Variables current-compiler
-//> Methods and Initializers current-class
 ClassCompiler* currentClass = NULL;
-//< Methods and Initializers current-class
-//> Compiling Expressions compiling-chunk
-/* Compiling Expressions compiling-chunk < Calls and Functions current-chunk
-Chunk* compilingChunk;
-
-static Chunk* currentChunk() {
-  return compilingChunk;
-}
-*/
-//> Calls and Functions current-chunk
 
 static Chunk* currentChunk() {
   return &current->function->chunk;
 }
-//< Calls and Functions current-chunk
 
-//< Compiling Expressions compiling-chunk
-//> Compiling Expressions error-at
 static void errorAt(Token* token, const char* message) {
-//> check-panic-mode
   if (parser.panicMode) return;
-//< check-panic-mode
-//> set-panic-mode
   parser.panicMode = true;
-//< set-panic-mode
   fprintf(stderr, "[line %d] Error", token->line);
 
   if (token->type == TOKEN_EOF) {
