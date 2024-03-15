@@ -1,13 +1,8 @@
-//> Chunks of Bytecode debug-c
 #include <stdio.h>
 
 #include "debug.h"
-//> Closures debug-include-object
 #include "object.h"
-//< Closures debug-include-object
-//> debug-include-value
 #include "value.h"
-//< debug-include-value
 
 void disassembleChunk(Chunk* chunk, const char* name) {
   printf("== %s ==\n", name);
@@ -16,19 +11,15 @@ void disassembleChunk(Chunk* chunk, const char* name) {
     offset = disassembleInstruction(chunk, offset);
   }
 }
-//> constant-instruction
 static int constantInstruction(const char* name, Chunk* chunk,
                                int offset) {
   uint8_t constant = chunk->code[offset + 1];
   printf("%-16s %4d '", name, constant);
   printValue(chunk->constants.values[constant]);
   printf("'\n");
-//> return-after-operand
   return offset + 2;
-//< return-after-operand
 }
-//< constant-instruction
-//> Methods and Initializers invoke-instruction
+
 static int invokeInstruction(const char* name, Chunk* chunk,
                                 int offset) {
   uint8_t constant = chunk->code[offset + 1];
@@ -38,14 +29,12 @@ static int invokeInstruction(const char* name, Chunk* chunk,
   printf("'\n");
   return offset + 3;
 }
-//< Methods and Initializers invoke-instruction
-//> simple-instruction
+
 static int simpleInstruction(const char* name, int offset) {
   printf("%s\n", name);
   return offset + 1;
 }
-//< simple-instruction
-//> Local Variables byte-instruction
+
 static int byteInstruction(const char* name, Chunk* chunk,
                            int offset) {
   uint8_t slot = chunk->code[offset + 1];
