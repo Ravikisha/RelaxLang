@@ -1,7 +1,7 @@
-#ifndef clox_compiler_h
-#define clox_compiler_h
+#ifndef nqq_compiler_h
+#define nqq_compiler_h
 
-#include "object.h"
+#include "compiler.h"
 #include "vm.h"
 
 ObjFunction* compile(const char* source);
