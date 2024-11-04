@@ -40,6 +40,12 @@ You can run the RelaxLang interpreter using the provided JAR file.
 java -jar lox.jar
 ```
 
+#### Running Directly from the Docker
+```bash
+docker push ravikishan63392/relaxlang:lastest
+docker run -it ravikishan63392/relaxlang:lastest
+```
+
 ### Using Docker
 
 You can also run RelaxLang using Docker. 

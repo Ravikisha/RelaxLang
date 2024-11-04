@@ -1,5 +1,5 @@
 # Use a base image with OpenJDK
-FROM openjdk:11-jre-slim
+FROM openjdk:17.0.1-jdk-slim
 
 # Set the working directory
 WORKDIR /app
@@ -11,4 +11,4 @@ COPY ./lox.jar .
 COPY ./README.md .
 
 # Specify the command to run the JAR file
-ENTRYPOINT ["java", "-jar", "jlox.jar"]
+ENTRYPOINT ["java", "-jar", "lox.jar"]
