@@ -1,3 +1,4 @@
+![RelaxLang](./docs/logo.jpg)
 # RelaxLang
 
 RelaxLang is a simple, interpreted programming language implemented in Java. It is inspired by the Lox programming language introduced in Robert Nystrom's *Crafting Interpreters*. RelaxLang is designed to be easy to understand and serve as an educational tool for those interested in language design and implementation.
@@ -8,6 +9,9 @@ RelaxLang is a simple, interpreted programming language implemented in Java. It 
 - **First-Class Functions**: Functions can be assigned to variables, passed as arguments, and returned from other functions.
 - **Classes and Inheritance**: Supports object-oriented programming concepts with class definitions and inheritance.
 - **Built-In Standard Library**: Includes useful functions and utilities to enhance the language experience.
+
+## Architecture
+![Architecture](./docs/arch.png)
 
 ## Getting Started
 
